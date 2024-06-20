@@ -1,0 +1,15 @@
+Warning[205] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 11 : Found directive in column 1. (ORG)
+Warning[203] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 12 : Found opcode in column 1. (GOTO)
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 16 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 23 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 25 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 32 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 35 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 39 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 41 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 43 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 46 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 49 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 96 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[203] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 230 : Found opcode in column 1. (RETLW)
+Warning[205] C:\USERS\NDC\DOWNLOADS\DUY TAN\EEPROM\EEPROM.ASM 231 : Found directive in column 1. (END)

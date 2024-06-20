@@ -1,0 +1,707 @@
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 #INCLUDE <P16F877.INC>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00540         LIST
+                      00002 
+                      00003 
+  00000021            00004 ADDRESS_COUNTER   EQU     0X21   
+  00000022            00005 COUNTER_DELAY1    EQU     0X22   
+  00000023            00006 COUNTER_DELAY2    EQU     0X23    
+  00000024            00007 INCOMING_DATA     EQU     0X24    
+  00000025            00008 LCD_DATA          EQU     0X25    
+                      00009 
+                      00010 
+Warning[205]: Found directive in column 1. (ORG)
+0000                  00011 ORG     0X00
+Warning[203]: Found opcode in column 1. (GOTO)
+0000   283F           00012 GOTO    MAIN_PROGRAM    
+                      00013 
+0001                  00014 EEPROM_ADDRESS
+0001   1283 1703      00015     BANKSEL EEADR       
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   008D           00016     MOVWF EEADR          
+0004   1283 1303      00017     BANKSEL 0x00         
+0006   0008           00018     RETURN               
+                      00019 
+                      00020 
+0007                  00021 EEPROM_READ
+0007   1683 1703      00022     BANKSEL EECON1          
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   140C           00023     BSF     EECON1,RD   
+000A   1283 1703      00024     BANKSEL EEDATA         
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000C   080C           00025     MOVF    EEDATA,W     
+000D   1283 1303      00026     BANKSEL 0X00         
+000F   0008           00027     RETURN               
+                      00028 
+                      00029 
+0010                  00030 EEPROM_WRITE 
+0010   1283 1703      00031     BANKSEL EEADR        
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0012   008C           00032     MOVWF   EEDATA       
+                      00033 
+0013   1683 1703      00034     BANKSEL EECON1       
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015   150C           00035     BSF     EECON1,WREN  
+                      00036 
+0016   138B           00037     BCF     INTCON,GIE   ; Tat ngat toan cuc
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0017   3055           00038     MOVLW   0X55         ; Nap gia tri 0x55 vao W    
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0018   008D           00039     MOVWF   EECON2       ; Chuyen gia tri W vao EECON2    
+0019   30AA           00040     MOVLW   0XAA            
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001A   008D           00041     MOVWF   EECON2          
+                      00042 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B   148C           00043     BSF     EECON1,WR    
+001C   178B           00044     BSF     INTCON,GIE   
+                      00045 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001D   188C           00046     BTFSC   EECON1,WR    ; Kiem tra xem qua trinh ghi da ket thuc chua    
+001E   281D           00047     GOTO    $-1          ; Neu chua, tiep tuc cho den khi ket thuc
+                      00048         
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001F   110C           00049     BCF     EECON1,WREN  ; Tat phep ghi
+0020   1283 1303      00050     BANKSEL 0X00                   
+0022   0008           00051     RETURN              
+                      00052 
+                      00053 
+0023                  00054 WriteEEPROM  
+0023   0821           00055     MOVF    ADDRESS_COUNTER,W  
+0024   2001           00056     CALL    EEPROM_ADDRESS     
+0025   0821           00057     MOVF    ADDRESS_COUNTER,W  
+0026   2088           00058     CALL    ROW1               
+0027   3A00           00059     XORLW   0X00               ; So sanh ket qua voi 0x00
+0028   1903           00060     BTFSC   STATUS,Z           ; Neu ket qua bang 0 thi quay lai
+0029   0008           00061     RETURN
+002A   2010           00062     CALL    EEPROM_WRITE       
+002B   0AA1           00063     INCF    ADDRESS_COUNTER,1  ; Tang dia chi len 1
+002C   2823           00064     GOTO    WriteEEPROM        
+                      00065 
+002D                  00066 DisplayRow 
+002D   0821           00067     MOVF    ADDRESS_COUNTER,W  ; Lay gia tri dia chi vao W
+002E   2001           00068     CALL    EEPROM_ADDRESS     ; Goi ham thiet lap dia chi EEPROM
+002F   2007           00069     CALL    EEPROM_READ        
+0030   1A21           00070     BTFSC   ADDRESS_COUNTER,4  ; Neu dia chi >= 16 (dong thu 2), nhay den SECOND_ROW
+0031   2835           00071     GOTO    SECOND_ROW
+0032   2061           00072     CALL    DATA_WRITE         
+0033   0AA1           00073     INCF    ADDRESS_COUNTER,1  
+0034   282D           00074     GOTO    DisplayRow         
+                      00075 
+                      00076 
+0035                  00077 SECOND_ROW
+0035   2076           00078     CALL    LCD_SECOND_ROW     
+                      00079 
+0036                  00080 MESSAGE
+0036   0821           00081     MOVF    ADDRESS_COUNTER,W  
+0037   2001           00082     CALL    EEPROM_ADDRESS     
+0038   2007           00083     CALL    EEPROM_READ        
+0039   1AA1           00084     BTFSC   ADDRESS_COUNTER,5  ; Neu dia chi >= 32, nhay den END_MESSAGE
+003A   283E           00085     GOTO    END_MESSAGE
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+003B   2061           00086     CALL    DATA_WRITE         ; Goi ham ghi du lieu len LCD
+003C   0AA1           00087     INCF    ADDRESS_COUNTER,1  
+003D   2836           00088     GOTO    MESSAGE            
+                      00089 
+                      00090 
+003E                  00091 END_MESSAGE
+003E   283E           00092     GOTO    END_MESSAGE        
+                      00093 
+003F                  00094 MAIN_PROGRAM
+003F   1683 1303      00095     BANKSEL TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0041   0186           00096     CLRF    TRISB              
+0042   2046           00097     CALL    LCD_INIT           
+0043   2023           00098     CALL    WriteEEPROM        
+0044   01A1           00099     CLRF    ADDRESS_COUNTER    
+0045   202D           00100     CALL    DisplayRow         
+                      00101 
+                      00102 
+0046                  00103 LCD_INIT                            
+0046   3002           00104     MOVLW   H'02'              
+0047   204F           00105     CALL    COMMAND_WRITE      
+0048   3006           00106     MOVLW   H'06'              
+0049   204F           00107     CALL    COMMAND_WRITE                
+004A   3028           00108     MOVLW   0X28               
+004B   204F           00109     CALL    COMMAND_WRITE                
+004C   300C           00110     MOVLW   H'0C'              
+004D   204F           00111     CALL    COMMAND_WRITE                
+004E   0008           00112     RETURN
+                      00113 
+                      00114 
+004F                  00115 COMMAND_WRITE     
+004F   1283 1303      00116     BANKSEL PORTB                        
+0051   00A5           00117     MOVWF   LCD_DATA                    
+0052   0E25           00118     SWAPF   LCD_DATA,W         ; Dao vi tri byte trong W                
+0053   2057           00119     CALL    COMMAND_SEND            
+0054   0825           00120     MOVF    LCD_DATA,W                    
+0055   2057           00121     CALL    COMMAND_SEND                 
+0056   0008           00122     RETURN
+                      00123 
+                      00124 
+0057                  00125 COMMAND_SEND
+0057   1283 1303      00126     BANKSEL PORTB                        
+0059   390F           00127     ANDLW   0X0F              ; Lay 4 bit thap cua du lieu                  
+005A   0086           00128     MOVWF   PORTB                          
+005B   1283 1303      00129     BANKSEL PORTB                    
+005D   1206           00130     BCF     PORTB,4           ; Xoa bit 4 cua PORTB               
+005E   207F           00131     CALL    DELAY                         
+005F   2073           00132     CALL    E_PULSE           ; Goi xung clock
+0060   0008           00133     RETURN
+                      00134 
+                      00135 
+0061                  00136 DATA_WRITE 
+0061   1283 1303      00137     BANKSEL PORTB
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0063   00A5           00138     MOVWF   LCD_DATA                     
+0064   0E25           00139     SWAPF   LCD_DATA,W        ; Dao vi tri byte trong W               
+0065   2069           00140     CALL    SEND_DATA          
+0066   0825           00141     MOVF    LCD_DATA,W        ; Chuyen lai du lieu vao W            
+0067   2069           00142     CALL    SEND_DATA                        
+0068   0008           00143     RETURN
+                      00144 
+                      00145 
+0069                  00146 SEND_DATA
+0069   1283 1303      00147     BANKSEL PORTB
+006B   390F           00148     ANDLW   0X0F              ; Lay 4 bit thap cua du lieu                  
+006C   0086           00149     MOVWF   PORTB             ; Chuyen du lieu vao PORTB                    
+006D   1283 1303      00150     BANKSEL PORTB                
+006F   1606           00151     BSF     PORTB,4           ; Set bit 4 cua PORTB               
+0070   207F           00152     CALL    DELAY                          
+0071   2073           00153     CALL    E_PULSE           ; Goi xung clock                
+0072   0008           00154     RETURN
+                      00155 
+                      00156 
+0073                  00157 E_PULSE                            
+0073   1686           00158     BSF     PORTB,5                          
+0074   1286           00159     BCF     PORTB,5           ; Xoa bit 5 cua PORTB                
+0075   0008           00160     RETURN
+                      00161 
+                      00162 
+0076                  00163 LCD_SECOND_ROW                            
+0076   30C0           00164     MOVLW   0XC0                            
+0077   204F           00165     CALL    COMMAND_WRITE      
+0078   0008           00166     RETURN
+                      00167 
+                      00168 
+0079                  00169 LCD_FIRST_ROW_OFFSET                        
+0079   3E80           00170     ADDLW   0X80                              
+007A   204F           00171     CALL    COMMAND_WRITE                      
+007B   0008           00172     RETURN
+                      00173 
+                      00174 
+007C                  00175 LCD_SECOND_ROW_OFFSET                            
+007C   3EC0           00176     ADDLW   0XC0              ; Dia chi dau dong thu 2                  
+007D   204F           00177     CALL    COMMAND_WRITE                    
+007E   0008           00178     RETURN
+                      00179 
+                      00180 
+007F                  00181 DELAY
+007F   3020           00182     MOVLW   H'20'
+0080   00A2           00183     MOVWF   COUNTER_DELAY1    
+0081                  00184 LOOP1
+0081   3020           00185     MOVLW   H'20'
+0082   00A3           00186     MOVWF   COUNTER_DELAY2    
+0083                  00187 LOOP2
+0083   0BA3           00188     DECFSZ  COUNTER_DELAY2,F  
+0084   2883           00189     GOTO    LOOP2
+0085   0BA2           00190     DECFSZ  COUNTER_DELAY1,F  
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0086   2881           00191     GOTO    LOOP1
+0087   0008           00192     RETURN
+                      00193 
+                      00194 
+0088                  00195 ROW1 
+0088   0782           00196     ADDWF   PCL,F             
+0089   3453           00197     RETLW   'S'
+008A   3455           00198     RETLW   'U'
+008B   3420           00199     RETLW   ' '
+008C   3450           00200     RETLW   'P'
+008D   3448           00201     RETLW   'H'
+008E   3441           00202     RETLW   'A'
+008F   344D           00203     RETLW   'M'
+0090   3420           00204     RETLW   ' '
+0091   344B           00205     RETLW   'K'
+0092   3459           00206     RETLW   'Y'
+0093   3420           00207     RETLW   ' '
+0094   3454           00208     RETLW   'T'
+0095   3448           00209     RETLW   'H'
+0096   3455           00210     RETLW   'U'
+0097   3441           00211     RETLW   'A'
+0098   3454           00212     RETLW   'T'
+0099   3420           00213     RETLW   ' '
+009A   3448           00214     RETLW   'H'
+009B   344F           00215     RETLW   'O'
+009C   3420           00216     RETLW   ' '
+009D   3443           00217     RETLW   'C'
+009E   3448           00218     RETLW   'H'
+009F   3449           00219     RETLW   'I'
+00A0   3420           00220     RETLW   ' '
+00A1   344D           00221     RETLW   'M'
+00A2   3449           00222     RETLW   'I'
+00A3   344E           00223     RETLW   'N'
+00A4   3448           00224     RETLW   'H'
+00A5   3420           00225     RETLW   ' '
+00A6   3420           00226     RETLW   ' '
+00A7   3420           00227     RETLW   ' '
+00A8   3420           00228     RETLW   ' '
+                      00229    
+Warning[203]: Found opcode in column 1. (RETLW)
+00A9   3400           00230 RETLW   0X00      
+Warning[205]: Found directive in column 1. (END)
+                      00231 END
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADDRESS_COUNTER                   00000021
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+COMMAND_SEND                      00000057
+COMMAND_WRITE                     0000004F
+COUNTER_DELAY1                    00000022
+COUNTER_DELAY2                    00000023
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DATA_WRITE                        00000061
+DC                                00000001
+DELAY                             0000007F
+D_A                               00000005
+D_NOT_A                           00000005
+DisplayRow                        0000002D
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+EEPROM_ADDRESS                    00000001
+EEPROM_READ                       00000007
+EEPROM_WRITE                      00000010
+END_MESSAGE                       0000003E
+E_PULSE                           00000073
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INCOMING_DATA                     00000024
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LCD_DATA                          00000025
+LCD_FIRST_ROW_OFFSET              00000079
+LCD_INIT                          00000046
+LCD_SECOND_ROW                    00000076
+LCD_SECOND_ROW_OFFSET             0000007C
+LOOP1                             00000081
+LOOP2                             00000083
+MAIN_PROGRAM                      0000003F
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MESSAGE                           00000036
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+ROW1                              00000088
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SECOND_ROW                        00000035
+SEN                               00000000
+SEND_DATA                         00000069
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WriteEEPROM                       00000023
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_WRT_OFF                          00003DFF
+_WRT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F877                          00000001
+__DEBUG                           1
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------ ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   170
+Program Memory Words Free:  8022
+
+
+MPASM  5.51                        EEPROM.ASM   6-13-2024  22:34:51         PAGE 13
+
+
+
+
+
+Errors   :     0
+Warnings :     4 reported,     0 suppressed
+Messages :    11 reported,     0 suppressed
+
+

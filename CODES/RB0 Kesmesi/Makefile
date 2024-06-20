@@ -1,0 +1,19 @@
+# MPLAB IDE generated this makefile for use with GNU make.
+# Project: proje.mcp
+# Date: Thu Jun 13 21:53:08 2024
+
+AS = MPASMWIN.exe
+CC = 
+LD = mplink.exe
+AR = mplib.exe
+RM = rm
+
+dos.cof : dos.o
+	$(CC) /p16F877 "dos.o" /u_DEBUG /z__MPLAB_BUILD=1 /z__MPLAB_DEBUG=1 /o"dos.cof" /M"dos.map" /W /x
+
+dos.o : dos.asm ../../../../Program\ Files\ (x86)/Microchip/MPASM\ Suite/p16f877.inc
+	$(AS) /q /p16F877 "dos.asm" /l"dos.lst" /e"dos.err" /d__DEBUG=1
+
+clean : 
+	$(CC) "dos.o" "dos.hex" "dos.err" "dos.lst" "dos.cof"
+

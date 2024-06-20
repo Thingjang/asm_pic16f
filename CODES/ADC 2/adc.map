@@ -1,0 +1,48 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Wed May 15 13:05:42 2024
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000064
+       .config_2007_ADC.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000031      
+                            0x002007    0x002007      
+            51 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                 ADC_INIT   0x000020    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                 ADC_READ   0x00000a    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+              ANA_PROGRAM   0x000000    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                       DL   0x000029    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    LOOP1   0x00002b    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    LOOP2   0x00002d    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    MAIN0   0x000007    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                     WAIT   0x00000e    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              ANA_PROGRAM   0x000000    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    MAIN0   0x000007    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                 ADC_READ   0x00000a    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                     WAIT   0x00000e    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                 ADC_INIT   0x000020    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                       DL   0x000029    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    LOOP1   0x00002b    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+                    LOOP2   0x00002d    program     static C:\Users\PC DELL\OneDrive\Documents\ADC 2\adc.asm
+
+

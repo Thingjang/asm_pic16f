@@ -1,0 +1,38 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Sun Apr 21 18:28:53 2024
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x00003e
+                   .cinit    romdata   0x00001f    program   0x000004
+      .config_2007_SLAY.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000020      
+                            0x002007    0x002007      
+            34 out of 8454 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     LOOP   0x000015    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+                     MAIN   0x000001    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+             _.org_0_001A   0x00001a    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000001    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+                     LOOP   0x000015    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+             _.org_0_001A   0x00001a    program     static C:\Users\PC DELL\OneDrive\Documents\Nhu\slay.asm
+
+
